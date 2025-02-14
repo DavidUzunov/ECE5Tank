@@ -7,32 +7,24 @@ void setup(){
 
 }
 
-void moveForward() {
-  digitalWrite(Left1, HIGH);
-  digitalWrite(Left2, LOW);
+void ForwardRight() {
   digitalWrite(Right1, HIGH);
   digitalWrite(Right2, LOW);
 }
 
-void moveBackward() {
-  digitalWrite(Left1, LOW);
-  digitalWrite(Left2, HIGH);
+void BackwardRight() {
   digitalWrite(Right1, LOW);
   digitalWrite(Right2, HIGH);
 }
 
-void turnLeft() {
+void ForwardLeft() {
   digitalWrite(Left1, LOW);
   digitalWrite(Left2, HIGH);
-  digitalWrite(Right1, HIGH);
-  digitalWrite(Right2, LOW);
 }
 
-void turnRight() {
+void BackwardLeft() {
   digitalWrite(Left1, HIGH);
   digitalWrite(Left2, LOW);
-  digitalWrite(Right1, LOW);
-  digitalWrite(Right2, HIGH);
 }
 
 void stopMotors() {
