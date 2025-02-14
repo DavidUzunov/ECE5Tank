@@ -7,6 +7,8 @@ int LaserPin; //button pin to shoot the laser
 int VRX; //analog output in the x direction from the joystick
 int VRY; //analog output in the y direction from the joystick
 int SW=2;     //joystick button output
+int CENTER = 512;
+int DEADZONE = 50;
 //pins: A1,A2,12
 int x,y,s;
 ezButton button(SW);
@@ -39,5 +41,11 @@ void loop() {
   
   
   delay(100);
+  if (y > CENTER + DEADZONE) {
+    forwardRight(); //outside positive bound
+  else if (y < CENTER - DEADZONE) {
+    forwardLeft();  // outside negative bound
+  } 
 
 }
+
