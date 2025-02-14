@@ -19,6 +19,10 @@ int DEADZONE = 50;
 int y,s;
 ezButton button(SW);
 
+// Speed Variables
+#define MIN_SPEED 100
+#define MAX_SPEED 255
+
 // Function Declarations
 void forward(int, int);
 void back(int, int);
@@ -45,11 +49,16 @@ void setup(){
 
 void loop(){
   y = analogRead(VRY);
-
-  if (y - CENTER > DEADZONE){
+  if (y > CENTER + DEADZONE){
     forward(forB, bacB);
-  } else if (y - CENTER < -DEADZONE) {
+    int speed = map(y, CENTER + DEADZONE, 1023, MIN_SPEED, MAX_SPEED);
+    analogWrite(enB, speed);
+
+  } else if (y < CENTER - DEADZONE) {
     back(forB, bacB);
+    int speed = map(y, CENTER - DEADZONE, 0, MIN_SPEED, MAX_SPEED);
+    analogWrite(enB, speed);
+
   } else{
     stop();
   } 
