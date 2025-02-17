@@ -1,4 +1,5 @@
 #include <ezButton.h>
+#include "Movement.h"
 
 // Motor A
 int enA = 9;
@@ -23,11 +24,6 @@ ezButton button(SW);
 #define MIN_SPEED 100
 #define MAX_SPEED 255
 
-// Function Declarations
-void forward(int, int);
-void back(int, int);
-void stop();
-
 void setup(){
   // Set Up Motor Pins
   pinMode(enA, OUTPUT);
@@ -44,7 +40,7 @@ void setup(){
   pinMode(SW, INPUT);
 
   // Turn Motors Off
-  stop();
+  stop(forA, bacA);
 }
 
 void loop(){
@@ -60,23 +56,6 @@ void loop(){
     analogWrite(enB, speed);
 
   } else{
-    stop();
+    stop(forB, bacB);
   } 
-}
-
-void forward(int pin1, int pin2) {
-  digitalWrite(pin1, HIGH);
-  digitalWrite(pin2, LOW);
-}
-
-void back(int pin1, int pin2) {
-  digitalWrite(pin1, LOW);
-  digitalWrite(pin2, HIGH);
-}
-
-void stop() {
-  digitalWrite(bacA, LOW);
-  digitalWrite(bacA, LOW);
-  digitalWrite(forB, LOW);
-  digitalWrite(bacB, LOW);
 }
