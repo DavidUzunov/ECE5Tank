@@ -7,7 +7,8 @@
 
 
 // Joystick Pins
-int VRY=A1; //analog output in the y direction from the joystick
+int VRY1=A1; //analog output in the y direction from the joystick for left track
+int VRY2=A2;//analog output in the y direction from the joystick for the right track
 int SW=9;  //joystick button output
 //pins: A1,2
 int y;//y data var
@@ -35,16 +36,20 @@ void setup() {
 }
 
 void loop() {//code for test
-  int transmission;//test transmission with joystick data class
-  y = analogRead(VRY);//only Y input is needed
-  transmission = y;
+  int transmission[2];//test transmission with joystick data
+  bool t2;//button transmission
+  y = analogRead(VRY1);//only Y input is needed, takes in right track
+  transmission[0] = y;
+  y = analogRead(VRY2);//only Y input is needed, takes in for right track
+  transmission[1] = y;
   radio.write(&transmission, sizeof(transmission));//sends the transmission up to 32 bytes at a time
+  
   if(digitalRead(SW)!=HIGH){//if the button is pressed, send a transmission for the button
-    transmission = digitalRead(SW);
+    t2 = digitalRead(SW);
     Serial.println("Button Pressed!");
-    radio.write(&transmission, sizeof(transmission));//sends the transmission up to 32 bytes at a time
+    radio.write(&t2, sizeof(t2));//sends the transmission up to 32 bytes at a time
   }
-  delay(1000);
+  delay(10);
 }
 
 
