@@ -22,4 +22,18 @@ void loop() {
   const char text[] = "Hello World";//test transmission
   radio.write(&text, sizeof(text));//sends the transmission up to 32 bytes at a time
   delay(1000);
+  //for the joystick:
+  JoystickData data;
+  data.x = analogRead(VRX);
+  data.y = analogRead(VRY);
+  //we may not need to use these, but just giving an example.
+
+  bool success = radio.write(&data, sizeof(data));
+  Serial.println(data.x) //output x
+  Serial.println(data.y) //output y
+  if (!success) {
+    Serial.print("Data Failed to Send!")l
+  }
+  delay(100) //adjust as needed:
+  
 }
