@@ -1,0 +1,45 @@
+//Essential libraries
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+
+RF24 radio(7, 8); // CE, CSN pins
+
+const byte address[6] = "00001";//match address byte on transmitter and receiver
+
+struct JoystickData { //same construction for joystick as receiver
+  int x;
+  int y;
+};
+
+void setup() {
+  Serial.begin(9600);
+  delay(100);
+  
+  if(radio.begin()) {
+    Serial.println("CONNECTED!");
+  } else {
+    Serial.println("Not connect Radio");
+  };
+
+  radio.openReadingPipe(1, address);//the receiver gets designated as a receiver on the same address
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
+};
+
+void loop() {
+  //Serial.println("Printing Works");
+  //Serial.println(radio.available());
+  if (radio.available()) {//checks if there is data that can be read
+    char text[11] = "hi";//can read up to 32 bytes
+    radio.read(&text, sizeof(text));//takes the transmission and pastes into the variable
+    Serial.println(text);
+    //for the joystick
+    //JoystickData data;
+    //radio.read(&data, sizeof(data));
+    //THEN: the movement
+    
+    } 
+    delay(100);
+  }
