@@ -9,17 +9,26 @@
 #define CENTER 512
 #define DEADZONE 50
 
+struct motorPin {
+  int enPin;
+  int in1;
+  int in2;
+};
 
-void move(int value, int pin1, int pin2, int enablePin);
+// Controls the movement of the tracks
+void move(int, motorPin);
+
+// Initializes the pins
+void init(motorPin);
 
 // Takes in 2 integers representing the control pins of motor
 // Sets the pins to make the motor turn forward
-void forward(int, int);
+void forward(motorPin);
 
 // Takes in 2 integers representing the control pins of motor
 // Sets the pins to make the motor turn backward
-void back(int, int);
+void back(motorPin);
 
 // Takes in 2 integers representing the control pins of motor
 // Sets the pins to make the motor stop
-void stop(int , int);
+void stop(motorPin);

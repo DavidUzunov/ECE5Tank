@@ -14,50 +14,41 @@ struct JoystickData { //same construction for joystick as receiver
   int y;
 };
 
-int enA = 5;
-int in1 = 4;
-int in2 = 2;
-
-int enB = 3;
-int in3 = 10;
-int in4 = 9;
+motorPin rightMot = {5, 4, 2}, leftMot = {3, 10, 9};
 
 void setup() {
   Serial.begin(9600);
-  delay(100);
-  
+
+  // Initializes the radio
   if(radio.begin()) {
     Serial.println("CONNECTED!");
   } else {
     Serial.println("Not connect Radio");
   };
 
-  pinMode(enA, OUTPUT);
-  pinMode(enB, OUTPUT);
-  pinMode(in1, OUTPUT);
-  pinMode(in2, OUTPUT);
-  pinMode(in3, OUTPUT);
-  pinMode(in4, OUTPUT);
+  // Initializes the motor pins
+  init(rightMot);
+  init(leftMot);
 
+  // Opens pipes for reading in transmissions
   radio.openReadingPipe(1, address);//the receiver gets designated as a receiver on the same address
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
 };
 
 void loop() {
-  //Serial.println("Printing Works");
-  //Serial.println(radio.available());
+
   if (radio.available()) {//checks if there is data that can be read
-    int values[2];//can read up to 32 bytes
-    radio.read(&values, sizeof(values));//takes the transmission and pastes into the variable
-    Serial.print("L: ");
-    Serial.print(values[0]);
-    Serial.print("R: ");
-    Serial.println(values[1]);
+    //Reads in the joystick positions
+    int values[2];
+    radio.read(&values, sizeof(values));
     
-    move(values[0], in1, in2, enA); // Left
-    move(values[1], in3, in4, enB); // Right
+    // Moves the tracks
+    move(values[0], leftMot); // Left
+    move(values[1], rightMot); // Right
     
-    } 
-    delay(10);
   }
+
+  delay(10);
+
+}

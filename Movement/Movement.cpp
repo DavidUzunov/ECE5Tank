@@ -2,31 +2,37 @@
 // Written by Anthony Ma
 #include"Movement.h"
 
-void move(int value, int pin1, int pin2, int enablePin){
+void move(int value, motorPin mp){
   if (value > CENTER + DEADZONE){
-      forward(pin1, pin2);
+      forward(mp);
       int speed = map(value, CENTER + DEADZONE, 1023, MIN_SPEED, MAX_SPEED);
-      analogWrite(enablePin, speed);
+      analogWrite(mp.enPin, speed);
   } else if (value < CENTER - DEADZONE){
-      back(pin1, pin2);
+      back(mp);
       int speed = map(value, CENTER - DEADZONE, 0, MIN_SPEED, MAX_SPEED);
-      analogWrite(enablePin, speed);
+      analogWrite(mp.enPin, speed);
     } else{
-      stop(pin1, pin2);
+      stop(mp);
     }
 }
 
-void forward(int pin1, int pin2) {
-    digitalWrite(pin1, HIGH);
-    digitalWrite(pin2, LOW);
+void init(motorPin mp){
+  pinMode(mp.enPin, OUTPUT);
+  pinMode(mp.in1, OUTPUT);
+  pinMode(mp.in2, OUTPUT);
+}
+
+void forward(motorPin mp) {
+    digitalWrite(mp.in1, HIGH);
+    digitalWrite(mp.in2, LOW);
   }
   
-  void back(int pin1, int pin2) {
-    digitalWrite(pin1, LOW);
-    digitalWrite(pin2, HIGH);
+  void back(motorPin mp) {
+    digitalWrite(mp.in1, LOW);
+    digitalWrite(mp.in2, HIGH);
   }
   
-  void stop(int pin1, int pin2) {
-    digitalWrite(pin1, LOW);
-    digitalWrite(pin2, LOW);
+  void stop(motorPin mp) {
+    digitalWrite(mp.in1, LOW);
+    digitalWrite(mp.in2, LOW);
   }
