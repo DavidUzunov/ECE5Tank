@@ -6,7 +6,10 @@ RF24 radio(7, 8); // CE, CSN pins
 //creates the radio object
 
 const byte address[6] = "00001";//same address as the receiver so they can communicate
-
+struct JoystickData { //added a construction to help read the data for movement
+  int x;
+  int y;
+};
 void setup() {
   radio.begin();
   radio.openWritingPipe(address);//designates this as a transmitter
