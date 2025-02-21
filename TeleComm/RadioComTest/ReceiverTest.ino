@@ -8,6 +8,11 @@ RF24 radio(7, 8); // CE, CSN pins
 
 const byte address[6] = "00001";//match address byte on transmitter and receiver
 
+struct JoystickData { //same construction for joystick as receiver
+  int x;
+  int y;
+};
+
 void setup() {
   Serial.begin(9600);
   radio.begin();
@@ -21,5 +26,14 @@ void loop() {
     char text[32] = "";//can read up to 32 bytes
     radio.read(&text, sizeof(text));//takes the transmission and pastes into the variable
     Serial.println(text);
+    //for the joystick
+    JoystickData data;
+    radio.read(&data, sizeof(data));
+    //THEN: the movement
+    if (y > CENTER + DEADZONE) {
+      forwardRight(); //outside positive bound
+    else if (y < CENTER - DEADZONE) {
+      forwardLeft();  // outside negative bound
+    } 
   }
 }
