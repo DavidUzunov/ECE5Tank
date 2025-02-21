@@ -1,61 +1,63 @@
-#include <ezButton.h>
+//Essential libraries
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 #include "Movement.h"
 
-// Motor A
-int enA = 9;
-int bacA = 8;
-int forA = 7;
 
-// Motor B
+RF24 radio(7, 8); // CE, CSN pins
+
+const byte address[6] = "00001";//match address byte on transmitter and receiver
+
+struct JoystickData { //same construction for joystick as receiver
+  int x;
+  int y;
+};
+
+int enA = 5;
+int in1 = 4;
+int in2 = 2;
+
 int enB = 3;
-int bacB = 4;
-int forB = 5;
+int in3 = 10;
+int in4 = 9;
 
-// Joystick Pins
-int VRY; //analog output in the y direction from the joystick
-int SW=2;     //joystick button output
-int CENTER = 512;
-int DEADZONE = 50;
-//pins: A1,A2,12
-int y,s;
-ezButton button(SW);
+void setup() {
+  Serial.begin(9600);
+  delay(100);
+  
+  if(radio.begin()) {
+    Serial.println("CONNECTED!");
+  } else {
+    Serial.println("Not connect Radio");
+  };
 
-// Speed Variables
-#define MIN_SPEED 100
-#define MAX_SPEED 255
-
-void setup(){
-  // Set Up Motor Pins
   pinMode(enA, OUTPUT);
   pinMode(enB, OUTPUT);
-  pinMode(forA, OUTPUT);
-  pinMode(bacA, OUTPUT);
-  pinMode(bacB, OUTPUT);
-  pinMode(forB, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
 
-  // Set up Joystick Pins
-  button.setDebounceTime(50);
-  VRY=A1;//analog pins
-  pinMode(VRY, INPUT);
-  pinMode(SW, INPUT);
+  radio.openReadingPipe(1, address);//the receiver gets designated as a receiver on the same address
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
+};
 
-  // Turn Motors Off
-  stop(forA, bacA);
-}
-
-void loop(){
-  y = analogRead(VRY);
-  if (y > CENTER + DEADZONE){
-    forward(forB, bacB);
-    int speed = map(y, CENTER + DEADZONE, 1023, MIN_SPEED, MAX_SPEED);
-    analogWrite(enB, speed);
-
-  } else if (y < CENTER - DEADZONE) {
-    back(forB, bacB);
-    int speed = map(y, CENTER - DEADZONE, 0, MIN_SPEED, MAX_SPEED);
-    analogWrite(enB, speed);
-
-  } else{
-    stop(forB, bacB);
-  } 
-}
+void loop() {
+  //Serial.println("Printing Works");
+  //Serial.println(radio.available());
+  if (radio.available()) {//checks if there is data that can be read
+    int values[2];//can read up to 32 bytes
+    radio.read(&values, sizeof(values));//takes the transmission and pastes into the variable
+    Serial.print("L: ");
+    Serial.print(values[0]);
+    Serial.print("R: ");
+    Serial.println(values[1]);
+    
+    move(values[0], in1, in2, enA); // Left
+    move(values[1], in3, in4, enB); // Right
+    
+    } 
+    delay(10);
+  }
