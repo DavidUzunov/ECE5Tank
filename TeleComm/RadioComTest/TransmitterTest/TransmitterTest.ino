@@ -7,12 +7,10 @@
 
 
 // Joystick Pins
-int VRY; //analog output in the y direction from the joystick
-int SW=2;     //joystick button output
-int CENTER = 512;
-int DEADZONE = 50;
-//pins: A1,A2,12
-int y,s;
+int VRY=A1; //analog output in the y direction from the joystick
+int SW=9;  //joystick button output
+//pins: A1,2
+int y;//y data var
 ezButton button(SW);
 
 
@@ -37,14 +35,21 @@ void setup() {
 }
 
 void loop() {//code for test
-  const char text[] = "Hello World";//test transmission
-  radio.write(&text, sizeof(text));//sends the transmission up to 32 bytes at a time
+  int transmission;//test transmission with joystick data class
+  y = analogRead(VRY);//only Y input is needed
+  transmission = y;
+  radio.write(&transmission, sizeof(transmission));//sends the transmission up to 32 bytes at a time
+  if(digitalRead(SW)!=HIGH){//if the button is pressed, send a transmission for the button
+    transmission = digitalRead(SW);
+    Serial.println("Button Pressed!");
+    radio.write(&transmission, sizeof(transmission));//sends the transmission up to 32 bytes at a time
+  }
   delay(1000);
 }
 
 
 //real code
-/**/
+/*
 
 
 
@@ -60,6 +65,7 @@ int forA = 7;
 int enB = 3;
 int bacB = 4;
 int forB = 5;
+
 
 
 
@@ -131,3 +137,4 @@ void stop() {
 }
 
 
+*/
