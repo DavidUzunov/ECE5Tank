@@ -20,6 +20,13 @@ RF24 radio(8, 7); // CE, CSN pins
 
 const byte address[6] = "00001";//same 5 char address as the receiver so they can communicate
 
+struct SendData{
+  int Y1;
+  int Y2;
+  int B1;
+  int B2;
+};
+SendData Transmission;
 void setup() {
   Serial.begin(9600);
 
@@ -36,18 +43,10 @@ void setup() {
 }
 
 void loop() {//code for test
-  int transmission[2];//test transmission with joystick data
-  bool t2;//button transmission
-  y = analogRead(VRY1);//only Y input is needed, takes in right track
-  transmission[0] = y;
-  y = analogRead(VRY2);//only Y input is needed, takes in for right track
-  transmission[1] = y;
-  radio.write(&transmission, sizeof(transmission));//sends the transmission up to 32 bytes at a time
-  
-  if(digitalRead(SW)!=HIGH){//if the button is pressed, send a transmission for the button
-    t2 = digitalRead(SW);
-    Serial.println("Button Pressed!");
-    radio.write(&t2, sizeof(t2));//sends the transmission up to 32 bytes at a time
-  }
+  Transmission.Y1 = analogRead(VRY1);//only Y input is needed, takes in left track
+  Transmission.Y2 = analogRead(VRY2);//only Y input is needed, takes in for right track
+  Transmission.B1 = digitalRead(SW);//left switch - toggle state switch
+  Transmission.B1 = digitalRead(SW2);//right switch - shoot button
+  radio.write(&Transmission, sizeof(Transmission));//sends the transmission up to 32 bytes at a time
   delay(10);
 }
