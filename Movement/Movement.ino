@@ -12,13 +12,13 @@ int LPin = 14;//digitizes analog pin A0
 
 const byte address[6] = "00001";  //match address byte on transmitter and receiver
 
-motorPin rightMot = { 5, 4, 2 }, leftMot = { 3, 10, 9 };
+motorPin rightMot = { 5, 4, 2 }, leftMot = { 3, 10, 9 };//motor control pins
 
-struct JoystickInput{
-int Y1;
-int Y2;
-int button1;
-int button2;
+struct JoystickInput{//struct for all joystick input data
+int Y1;//Y1 and Button1 are both left joystick
+int Y2;//Y2 and Button2 are both right joystick
+bool button1;
+bool button2;
 };
 
 void setup() {
@@ -36,7 +36,8 @@ void setup() {
   init(leftMot);
 
   //initialize servo pin(s)
-  Turret1.attach(6);  //6 is the final free pin I could see on the Rx side
+  Turret1.attach(6);  //6 is the final free pin I could see on the digital side of the tank arduino
+
   // Opens pipes for reading in transmissions
   radio.openReadingPipe(1, address);  //the receiver gets designated as a receiver on the same address
   radio.setPALevel(RF24_PA_MIN);
@@ -45,9 +46,9 @@ void setup() {
 
 void loop() {
   JoystickInput Testing;
-  if (Testing.button1 == 0) {//Concept: two modes - mode 0 is tank controls, mode 1 is turret controls, pushing the button toggles between it
+  if (Testing.button1 == 1) {//Concept: two modes - mode 0 is tank controls, mode 1 is turret controls, pushing the button toggles between it
     if (radio.available()) {  //checks if there is data that can be read
-      //Reads in the joystick positions
+      //Reads in the joystick data
       radio.read(&Testing, sizeof(Testing));
 
       // Moves the tracks
