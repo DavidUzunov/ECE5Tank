@@ -21,12 +21,19 @@ RF24 radio(10, 9);  // CE, CSN pins
 const byte address[6] = "00001";  //match address byte on transmitter and receiver
 
 // Motor Objects
-motorPin rightMot = { 5, 4, 2 }, leftMot = { 3, 10, 9 }; //Motor control pins
+motorPin rightMot = { 6, 7, 8 }, leftMot = { 5, 4, 3 }; //Motor control pins
 
 // Turrent Variables
 bool turretMode;
-Servo Turret1; //Turret1 is the updown turret. If we Manage to get a second one setup, we'll add Turret2 for the second turret.
-int LPin = 14; //digitizes analog pin A0
+// TurretZ for controlling the z direction
+Servo turretZ; 
+int zPin = 2; 
+int turretZPos;
+// TurretXY for controlling horizontal direction
+Servo turretXY; 
+int xyPin = 14; // Analog pin 0
+int turretXYPos;
+
 
 void setup() {
   Serial.begin(9600);
@@ -50,7 +57,10 @@ void setup() {
 
   // Initialize servo pin(s)
   turretMode = false;
-  Turret1.attach(6);  //6 is the final free pin I could see on the digital side of the tank arduino
+  turretZ.attach(zPin); // Attach servo motor to pin 2
+  turretZPos = 0; // Start at pos 0
+  turretXY.attach(xyPin); // Attach servo motor to pin A0
+  turretXYPos = 0; // Start at pos 0
 };
 
 void loop() {
@@ -69,14 +79,34 @@ void loop() {
       move(testing.yRight, rightMot);  // Right
 
   } else {
-    // Moves the servo
-    Turret1.write(testing.yLeft);
+    // Moves the servo up
+    if (testing.buttonLeft > CENTER + DEADZONE){
+      // Increments turret if you push the joystick up
+      if (turretZPos < 180){
+        turretZPos++;
+      }
+    } else if (testing.buttonLeft < CENTER - DEADZONE){
+      // Decrements turret pos if you push the joystick down
+      if (turretZPos > 0){
+        turretZPos--;
+      }
+    }
 
-    //Turret2.write(Testing.Y2);//This line only exists if we have the pins for a second servo
-/*    if(testing.buttonRight == 1){
-      digitalWrite(LPin, HIGH);
-      delay(50);
-      digitalWrite(LPin, LOW);
+    turretZ.write(turretZPos);
+
+    /*//if (testing.buttonRight > CENTER + DEADZONE){
+      // Moves to the right when right joystick pushed up
+      if (turretXYPos < 180){}
+        turretXYPos++;
+      }
+    } else (testing.buttonRight < CENTER - DEADZONE){
+      // Moves to the left when left joystick down
+      if (turretXYPos > 0){
+        turretXYPos--;
+      }
+    }
+
+    turretXY.write(turretXYPos;
     }*/
   }
   delay(10);
