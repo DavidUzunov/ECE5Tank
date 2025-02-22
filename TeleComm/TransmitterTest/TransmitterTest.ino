@@ -7,27 +7,29 @@
 
 
 // Joystick Pins
-int VRY1 = A1;  //analog output in the y direction from the joystick for left track
-int VRY2 = A2;  //analog output in the y direction from the joystick for the right track
-int SW = 9;     //joystick button output
-int SW2 = 10;
-//pins: A1,2
+int VRY1 = A0;  //analog output in the y direction from the joystick for left track
+int VRY2 = A1;  //analog output in the y direction from the joystick for the right track
+int SW = 8;     //joystick button output
+int SW2 = 7;
+
 ezButton button(SW);
 ezButton button2(SW2);
-bool press = 1;  //button state tracking
+//bool press = true;  //button state tracking
 
-RF24 radio(8, 7);  // CE, CSN pins
 //creates the radio object
-
+RF24 radio(9, 10);  // CE, CSN pins
 const byte address[6] = "00001";  //same 5 char address as the receiver so they can communicate
-int prevState;                    //used for button 1, checks if the previous state matches current state to toggle controller modes
+//int prevState;                    //used for button 1, checks if the previous state matches current state to toggle controller modes
+
 struct SendData {
   int Y1;
   int Y2;
-  bool Button1 = 1;
-  bool Button2 = 1;
+  bool Button1 = false;
+  bool Button2 = false;
 };
+
 SendData Transmission;
+
 void setup() {
   Serial.begin(9600);
 
@@ -47,13 +49,21 @@ void setup() {
 
 void loop() {                          //code for test
   button.loop();                       // MUST call the loop() function first
+//  button2.loop();                    
+  
+  // Takes in Y positions of joysticks
   Transmission.Y1 = analogRead(VRY1);  //only Y input is needed, takes in left track
   Transmission.Y2 = analogRead(VRY2);  //only Y input is needed, takes in for right track
+
+  // Check button states
   if (button.isPressed()) {
     //TODO: One issue with this line is that the button doesn't want to switch to 0 unless you briefly hold it
-    Transmission.Button1 = digitalRead(SW);
+    Transmission.Button1 = true;
   }
-  Transmission.Button2 = digitalRead(SW2);           //right switch - shoot button
+  if (button2.isPressed()){
+    Transmission.Button2 = true;           //right switch - shoot button
+  }
+
   radio.write(&Transmission, sizeof(Transmission));  //sends the transmission up to 32 bytes at a time
   delay(10);
 }

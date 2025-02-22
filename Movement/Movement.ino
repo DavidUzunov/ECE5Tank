@@ -59,8 +59,10 @@ void setup() {
   turretMode = false;
   turretZ.attach(zPin); // Attach servo motor to pin 2
   turretZPos = 0; // Start at pos 0
+  turretZ.write(turretZPos); // Reset Turret Position
   turretXY.attach(xyPin); // Attach servo motor to pin A0
   turretXYPos = 0; // Start at pos 0
+  turretXY.write(turretXYPos); // 
 };
 
 void loop() {
@@ -109,5 +111,6 @@ void loop() {
     turretXY.write(turretXYPos;
     }*/
   }
+  
   delay(10);
 }
