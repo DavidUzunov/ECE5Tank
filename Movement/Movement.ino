@@ -71,7 +71,15 @@ void loop() {
       radio.read(&testing, sizeof(testing)); //Reads in the joystick data
   }
 
-  if (testing.buttonLeft){
+  Serial.print("Button Left: ");
+  Serial.print(testing.buttonLeft);
+  Serial.print("\tButton Right: ");
+  Serial.print(testing.buttonRight);
+  Serial.print("\tTurret Mode: ");
+  Serial.println(turretMode);
+
+
+  if (testing.buttonRight){
     turretMode = !turretMode; // Toggles betweens the modes of the turret
   }
 
@@ -82,15 +90,15 @@ void loop() {
 
   } else {
     // Moves the servo up
-    if (testing.buttonLeft > CENTER + DEADZONE){
+    if (testing.yRight > CENTER + DEADZONE){
       // Increments turret if you push the joystick up
       if (turretZPos < 180){
-        turretZPos++;
+        turretZPos += 3;
       }
-    } else if (testing.buttonLeft < CENTER - DEADZONE){
+    } else if (testing.yRight < CENTER - DEADZONE){
       // Decrements turret pos if you push the joystick down
       if (turretZPos > 0){
-        turretZPos--;
+        turretZPos -= 3;
       }
     }
 

@@ -32,7 +32,7 @@ SendData Transmission;
 
 void setup() {
   Serial.begin(9600);
-
+  delay(100);
   if (radio.begin()) {
     Serial.println("Radio.begin Succeeded!");
   } else {
@@ -49,21 +49,25 @@ void setup() {
 
 void loop() {                          //code for test
   button.loop();                       // MUST call the loop() function first
-//  button2.loop();                    
+  button2.loop();                    
   
   // Takes in Y positions of joysticks
   Transmission.Y1 = analogRead(VRY1);  //only Y input is needed, takes in left track
   Transmission.Y2 = analogRead(VRY2);  //only Y input is needed, takes in for right track
 
   // Check button states
-  if (button.isPressed()) {
+  if (!digitalRead(SW)) {
     //TODO: One issue with this line is that the button doesn't want to switch to 0 unless you briefly hold it
+    Serial.println("Button Pressed");
     Transmission.Button1 = true;
   }
   if (button2.isPressed()){
+    Serial.println("Button2 Pressed");
     Transmission.Button2 = true;           //right switch - shoot button
   }
 
   radio.write(&Transmission, sizeof(Transmission));  //sends the transmission up to 32 bytes at a time
+  Transmission.Button1 = false;
+  Transmission.Button2 = false;
   delay(10);
 }
