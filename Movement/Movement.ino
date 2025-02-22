@@ -5,70 +5,79 @@
 #include "Movement.h"
 #include <Servo.h>  //used for turret servo motors
 
-RF24 radio(7, 8);  // CE, CSN pins
+// Struct of Joystick data
+struct JoystickInput{
+  // Y levels
+  int yLeft;
+  int yRight;
 
-Servo Turret1;  //Turret1 is the updown turret. If we Manage to get a second one setup, we'll add Turret2 for the second turret.
-int LPin = 14;//digitizes analog pin A0
+  // Button states
+  bool buttonLeft;
+  bool buttonRight;
+} testing;
 
+// Transceiver Variables
+RF24 radio(10, 9);  // CE, CSN pins
 const byte address[6] = "00001";  //match address byte on transmitter and receiver
 
-motorPin rightMot = { 5, 4, 2 }, leftMot = { 3, 10, 9 };//motor control pins
+// Motor Objects
+motorPin rightMot = { 5, 4, 2 }, leftMot = { 3, 10, 9 }; //Motor control pins
 
-struct JoystickInput{//struct for all joystick input data
-int Y1;//Y1 and Button1 are both left joystick
-int Y2;//Y2 and Button2 are both right joystick
-bool button1;
-bool button2;
-};
+// Turrent Variables
+bool turretMode;
+Servo Turret1; //Turret1 is the updown turret. If we Manage to get a second one setup, we'll add Turret2 for the second turret.
+int LPin = 14; //digitizes analog pin A0
 
 void setup() {
   Serial.begin(9600);
 
+  delay(100);
   // Initializes the radio
   if (radio.begin()) {
-    Serial.println("CONNECTED!");
+    Serial.println("Radio Connected");
   } else {
-    Serial.println("Failed to connect to radio (sad face)");
+    Serial.println("Failed to connect to radio :(");
   };
-
-  // Initializes the motor pins
-  init(rightMot);
-  init(leftMot);
-
-  //initialize servo pin(s)
-  Turret1.attach(6);  //6 is the final free pin I could see on the digital side of the tank arduino
 
   // Opens pipes for reading in transmissions
   radio.openReadingPipe(1, address);  //the receiver gets designated as a receiver on the same address
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
+
+  // Initialize motor pins
+  init(rightMot);
+  init(leftMot);
+
+  // Initialize servo pin(s)
+  turretMode = false;
+  Turret1.attach(6);  //6 is the final free pin I could see on the digital side of the tank arduino
 };
 
 void loop() {
-  JoystickInput Testing;
-  if (Testing.button1 == 1) {//Concept: two modes - mode 0 is tank controls, mode 1 is turret controls, pushing the button toggles between it
-    if (radio.available()) {  //checks if there is data that can be read
-      //Reads in the joystick data
-      radio.read(&Testing, sizeof(Testing));
 
+  if (radio.available()) {  //Checks if there is data that can be read
+      radio.read(&testing, sizeof(testing)); //Reads in the joystick data
+  }
+
+  if (testing.buttonLeft){
+    turretMode = !turretMode; // Toggles betweens the modes of the turret
+  }
+
+  if (!turretMode) {//Concept: two modes - mode 0 is tank controls, mode 1 is turret controls, pushing the button toggles between it
       // Moves the tracks
-      move(Testing.Y1, leftMot);   // Left
-      move(Testing.Y2, rightMot);  // Right
-    }
-  } else {
-    if (radio.available()) {  //checks if there is data that can be read
-      //Reads in the joystick positions
-      radio.read(&Testing, sizeof(Testing));
+      move(testing.yLeft, leftMot);   // Left
+      move(testing.yRight, rightMot);  // Right
 
-      // Moves the servo
-      Turret1.write(Testing.Y1);
-      //Turret2.write(Testing.Y2);//This line only exists if we have the pins for a second servo
-      if(Testing.button2 == 1){
-        digitalWrite(LPin, HIGH);
-        delay(50);
-        digitalWrite(LPin, LOW);
-      }
-    }
+  } else {
+    // Moves the servo
+    Turret1.write(testing.yLeft);
+
+    //Turret2.write(Testing.Y2);//This line only exists if we have the pins for a second servo
+/*    if(testing.buttonRight == 1){
+      digitalWrite(LPin, HIGH);
+      delay(50);
+      digitalWrite(LPin, LOW);
+    }*/
   }
   delay(10);
 }
