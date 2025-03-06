@@ -9,6 +9,11 @@
 #define CENTER 512
 #define DEADZONE 50
 
+// State Variables
+#define OFF 0
+#define TANK_MODE 1
+#define TURRET_MODE 2
+
 struct motorPin {
   int enPin;
   int in1;
