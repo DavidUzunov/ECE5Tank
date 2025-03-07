@@ -39,8 +39,6 @@ Servo turretXY;
 int xyPin = 14; // Analog pin 0
 int turretXYPos;
 
-int timeTurretMove;
-
 
 
 void setup() {
@@ -71,8 +69,6 @@ void setup() {
   turretXYPos = 90; // Start at pos 0
   turretXY.write(turretXYPos);
 
-  timeTurretMove = 100;
-
   // State of Car
   carState = OFF;
 };
@@ -84,14 +80,13 @@ void loop() {
   }
 
   /*Serial.print("Y Right: ");
-  Serial.print(inputs.yRight);
+  Serial.print(testing.yRight);
   Serial.print("\tY Left: ");
-  Serial.print(inputs.yLeft);
-  /*Serial.print("\t Right Button: ");
-  Serial.println(inputs.buttonRight);
-  Serial.print("\tState: ");
-  Serial.println(carState);*/
-
+  Serial.print(testing.yLeft);
+  Serial.print("\tButton Right: ");
+  Serial.print(testing.buttonRight);
+  Serial.print("\tTurret Mode: ");
+  Serial.println(turretMode);*/
 
   // The button switched state
   if (inputs.buttonRight == 1){
@@ -132,14 +127,6 @@ void loop() {
 
   switch (carState){
     
-    case OFF:
-      while (turretXYPos > 92 || turretXYPos < 88){
-        turretXYPos += (90 - turretXYPos)/2;
-        turretXY.write(turretXYPos);
-        delay(100);
-      }
-     break;
-    
     case TANK_MODE:
       // Moves the tracks
       move(inputs.yLeft, leftMot);   // Left
@@ -148,43 +135,43 @@ void loop() {
 
     case TURRET_MODE:
       // Moves the servo up
-      int currentTime = millis();
-      if (currentTime - timeTurretMove > 100){
-        if (inputs.yRight > CENTER + DEADZONE){
-         // Increments turret if you push the joystick up
-         if (turretXYPos < 180){
-            turretXYPos += 2;
-          }
-        } else if (inputs.yRight < CENTER - DEADZONE){
-         // Decrements turret pos if you push the joystick down
-          if (turretXYPos > 0){
-            turretXYPos -= 2;
-          }
+      if (inputs.yRight > CENTER + DEADZONE){
+        // Increments turret if you push the joystick up
+        if (turretZPos < 160){
+          turretZPos += 3;
         }
-
-        turretXY.write(turretXYPos);
-
-        /*//if (inputs.buttonRight > CENTER + DEADZONE){
-         // Moves to the right when right joystick pushed up
-         if (turretXYPos < 180){}
-            turretXYPos++;
-          }
-        } else (inputs.buttonRight < CENTER - DEADZONE){
-          // Moves to the left when left joystick down
-          if (turretXYPos > 0){
-            turretXYPos--;
-          }
-       }
-
-        turretXY.write(turretXYPos;
-        }*/
-        timeTurretMove = currentTime;
+      } else if (inputs.yRight < CENTER - DEADZONE){
+        // Decrements turret pos if you push the joystick down
+        if (turretZPos > 70){
+          turretZPos -= 3;
+        }
       }
+
+      turretZ.write(turretZPos);
+
+      /*//if (testing.buttonRight > CENTER + DEADZONE){
+        // Moves to the right when right joystick pushed up
+        if (turretXYPos < 180){}
+          turretXYPos++;
+        }
+      } else (testing.buttonRight < CENTER - DEADZONE){
+        // Moves to the left when left joystick down
+        if (turretXYPos > 0){
+          turretXYPos--;
+        }
+      }
+
+      turretXY.write(turretXYPos;
+      }*/
 
       break;
 
   }
 
+  /*Serial.print("State: ");
+  Serial.print(carState);
+  Serial.print("\t Right Button: ");
+  Serial.println(inputs.buttonRight);*/
   delay(10);
 
 }
