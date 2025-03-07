@@ -78,5 +78,10 @@ void loop() {     //code for test
   radio.write(&Transmission, sizeof(Transmission));  //sends the transmission up to 32 bytes at a time
   Transmission.Button1 = false;
   Transmission.ButtonSwitch = false;
+  Serial.print("Y1: ");
+  Serial.print(Transmission.Y1);
+  Serial.print("\tY2: ");
+  Serial.println(Transmission.Y2);
+
   delay(10);
 }

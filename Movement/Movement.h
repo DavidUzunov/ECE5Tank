@@ -7,7 +7,7 @@
 #define MIN_SPEED 100
 #define MAX_SPEED 255
 #define CENTER 512
-#define DEADZONE 50
+#define DEADZONE 100
 
 // State Variables
 #define OFF 0
