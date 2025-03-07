@@ -14,11 +14,10 @@ int SW2 = 7;
 
 ezButton button(SW);
 ezButton button2(SW2);
-bool button2State;
 //bool press = true;  //button state tracking
 
 //creates the radio object
-RF24 radio(9, 10);                // CE, CSN pins
+RF24 radio(9, 10);  // CE, CSN pins
 const byte address[6] = "00001";  //same 5 char address as the receiver so they can communicate
 //int prevState;                    //used for button 1, checks if the previous state matches current state to toggle controller modes
 
@@ -26,7 +25,7 @@ struct SendData {
   int Y1;
   int Y2;
   bool Button1 = false;
-  int ButtonSwitch = 0;
+  bool Button2 = false;
 };
 
 SendData Transmission;
@@ -46,13 +45,12 @@ void setup() {
 
   button.setDebounceTime(50);  // set debounce time to 50 milliseconds
   button2.setDebounceTime(50);
-  button2State = false;
 }
 
-void loop() {     //code for test
-  button.loop();  // MUST call the loop() function first
-  button2.loop();
-
+void loop() {                          //code for test
+  button.loop();                       // MUST call the loop() function first
+  button2.loop();                    
+  
   // Takes in Y positions of joysticks
   Transmission.Y1 = analogRead(VRY1);  //only Y input is needed, takes in left track
   Transmission.Y2 = analogRead(VRY2);  //only Y input is needed, takes in for right track
@@ -63,20 +61,13 @@ void loop() {     //code for test
     Serial.println("Button Pressed");
     Transmission.Button1 = true;
   }
-  bool currentState = digitalRead(SW2);
-  //Serial.println(currentState);
-  if (currentState != button2State) {
-    if (currentState == 0) {
-      Transmission.ButtonSwitch = 1;
-      Serial.println("Button2 Pressed");
-    } else {
-      Transmission.ButtonSwitch = 2;
-      Serial.println("Button2 Released");
-    }
-    button2State = currentState;
+  if (button2.isPressed()){
+    Serial.println("Button2 Pressed");
+    Transmission.Button2 = true;           //right switch - shoot button
   }
+
   radio.write(&Transmission, sizeof(Transmission));  //sends the transmission up to 32 bytes at a time
   Transmission.Button1 = false;
-  Transmission.ButtonSwitch = false;
+  Transmission.Button2 = false;
   delay(10);
 }
