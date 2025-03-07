@@ -39,6 +39,7 @@ void setup() {
     Serial.println("not able to begin radio");
   }
   radio.openWritingPipe(address);  //designates this as a transmitter
+  radio.setChannel(100);
   radio.setPALevel(RF24_PA_MIN);   //power amplifier level - set based on distance between Tx and Rx components
   //change above min for sure in our case
   radio.stopListening();  //stops it from listening which designates it as transmitter
@@ -67,6 +68,11 @@ void loop() {                          //code for test
   }
 
   radio.write(&Transmission, sizeof(Transmission));  //sends the transmission up to 32 bytes at a time
+  Serial.print("Y1: ");
+  Serial.print(Transmission.Y1);
+  Serial.print("\tY2: ");
+  Serial.println(Transmission.Y2);
+  
   Transmission.Button1 = false;
   Transmission.Button2 = false;
   delay(10);

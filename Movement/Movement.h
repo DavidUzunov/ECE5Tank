@@ -7,7 +7,9 @@
 #define MIN_SPEED 100
 #define MAX_SPEED 255
 #define CENTER 512
-#define DEADZONE 50
+#define DEADZONE 75
+#define TANK 1
+#define TURRET 2
 
 struct motorPin {
   int enPin;
