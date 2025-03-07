@@ -28,14 +28,15 @@ bool turretMode;
 
 // TurretZ for controlling the z direction
 Servo turretZ; 
-int zPin = 2; 
+const int zPin = 2; 
 int turretZPos;
 
 // TurretXY for controlling horizontal direction
 Servo turretXY; 
-int xyPin = 14; // Analog pin 0
+const int xyPin = 14; // Analog pin 0
 int turretXYPos;
 
+const int laserPin = 16;
 int timeTurretMove = 0;
 
 
@@ -71,6 +72,8 @@ void setup() {
   turretXY.attach(xyPin); // Attach servo motor to pin A0
   turretXYPos = 90; // Start at pos 0
   turretXY.write(turretXYPos); // 
+
+  pinMode(laserPin, OUTPUT);
 };
 
 void loop() {
@@ -82,10 +85,18 @@ void loop() {
   /*Serial.print("yRight: ");
   Serial.print(inputs.yRight);
   Serial.print("\tyLeft: ");
-  Serial.println(inputs.yLeft);*/
+  Serial.println(inputs.yLeft);
+  Serial.print("Turret Mode: ");
+  Serial.println(turretMode);*/
 
   if (inputs.buttonRight){
     turretMode = !turretMode; // Toggles betweens the modes of the turret
+  }
+
+  if (inputs.buttonLeft){
+    digitalWrite(laserPin, HIGH);
+  } else{
+    digitalWrite(laserPin, LOW);
   }
 
   if (!turretMode) {//Concept: two modes - mode 0 is tank controls, mode 1 is turret controls, pushing the button toggles between it
